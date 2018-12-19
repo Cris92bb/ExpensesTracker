@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import '../DataModels/SingleExpense.dart';
 import '../Helpers/IconConstants.dart';
 import './CreateExpense.dart';
+import '../Helpers/DatabaseHelper.dart';
 
 class ExpenseDetails extends StatelessWidget{
   final SingleExpense selectedExpense;
   final String currency;
   ExpenseDetails(this.selectedExpense,this.currency);
-
+  ExpensesProvider provider = new ExpensesProvider();
   @override
   Widget build(context){
 
@@ -36,6 +37,15 @@ class ExpenseDetails extends StatelessWidget{
              tooltip: "Edit",
              onPressed: (){
                Navigator.push(context, MaterialPageRoute(builder: (context) => new CreateExpense(expense: selectedExpense,)));
+             },
+           ),
+          new IconButton(
+             color: Theme.of(context).primaryColorLight,
+             icon: new Icon(Icons.delete),
+             tooltip: "Delete",
+             onPressed: (){
+               provider.delete(selectedExpense.id);
+               Navigator.pop(context,true);
              },
            )
          ]

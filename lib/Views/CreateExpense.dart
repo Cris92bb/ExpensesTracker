@@ -4,6 +4,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:expences_calculator/DataModels/SingleExpense.dart';
 import 'package:expences_calculator/CustomWidgets/BottomSaveButton.dart';
 import 'package:expences_calculator/CustomWidgets/IconsBottomSheet.dart';
+import '../Helpers/DatabaseHelper.dart';
 
 
 
@@ -21,12 +22,14 @@ class _CreateExpense extends State<CreateExpense>{
   
 
   final dateFormat = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
+  ExpensesProvider provider = new ExpensesProvider();
   DateTime date;
   TextEditingController ammountController;
   TextEditingController noteController;
   int ammount;
   String note;
   String icon;
+
   
   @override 
   void initState() {
@@ -54,7 +57,8 @@ class _CreateExpense extends State<CreateExpense>{
 
   onSave(){
     var tempExpense;
-    if(widget.expense==null){
+    bool newExpense = widget.expense==null;
+    if(newExpense){
       tempExpense = new SingleExpense();
     }else{
       tempExpense = widget.expense;
@@ -64,6 +68,13 @@ class _CreateExpense extends State<CreateExpense>{
     tempExpense.date    = date == null ? DateTime.now() : date;
     tempExpense.icon    = icon;
     tempExpense.note    = noteController.text;
+
+    if(newExpense){
+      provider.insert(tempExpense);
+    }else{
+      provider.update(tempExpense);
+    }
+
     //replace with save
     Navigator.pop(context,tempExpense);
   }

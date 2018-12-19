@@ -106,22 +106,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
     ExpensesProvider provider = new ExpensesProvider();
-    StreamController<SingleExpense> streamController = new StreamController.broadcast();
-    
-
-
     @override
     void initState() {
         super.initState();
         getPrefs();
-        streamController.stream.listen((data){
-              insertNewExpense(data);
-              print(data);
-        },onDone: (){
-          print("Task Done");
-        }, onError: (error){
-          print("Some error");
-        });
         provider.open("expenses.db").then((value){
           loadExpenses();  
         });
@@ -132,6 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
       await provider.insert(exp);
       loadExpenses();
     }
+
+    //need all expenses here so i can pass totals to other widgets
     List<SingleExpense> expenses;
     loadExpenses() async{
           provider.getAllExpenses().then((allExps){
@@ -172,16 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
               });
       });
     }
-
-    @override
-    void dispose() {
-         //deleteDatabase("expenses.db");
-         streamController.close();
-        super.dispose();
-
-    }
-    
-
 
     var currency  =     "";
     int payday    =     30;
@@ -251,10 +231,12 @@ class _MyHomePageState extends State<MyHomePage> {
               foregroundColor: Colors.white,
               backgroundColor: Colors.lightGreen,
               onPressed: (){
-                  Navigator.push(context,MaterialPageRoute(builder: (context) => new CreateExpense())).then((exp){
-                    if(exp!=null){
-                      streamController.add(exp);
-                    }
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => new CreateExpense())).then((val){
+                      setState(() {
+                        if(val!=null)
+                          expenses.add(val);
+                          expenses.sort((x,y)=> x.date.compareTo(y.date));
+                      });
                   });
               },
             ), 

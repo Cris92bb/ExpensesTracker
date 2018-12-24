@@ -38,8 +38,6 @@ class _PreferencesForm extends State<PreferencesForm> {
 
   @override
   void dispose() {
-        // Clean up the controller when the Widget is removed from the Widget tree
-        // This also removes the _printLatestValue listener
         payDayController.dispose();
         totalAmmountController.dispose();
         super.dispose();
@@ -61,6 +59,8 @@ class _PreferencesForm extends State<PreferencesForm> {
   @override
   Widget build(BuildContext context) {
   var width = MediaQuery.of(context).size.width-30;
+  var heigth = MediaQuery.of(context).size.height-30;
+
     return Scaffold(
       appBar: AppBar(
         //leading: new Icon(Icons.arrow_downward),
@@ -71,10 +71,11 @@ class _PreferencesForm extends State<PreferencesForm> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
-      body: Center(
+      body: Container(
+        padding: EdgeInsets.all(10),
         child:
          Container( 
-           padding: EdgeInsets.all(10),
+           //padding: EdgeInsets.all(10),
            child:
             new Column(
               children: <Widget>[
@@ -144,21 +145,9 @@ class _PreferencesForm extends State<PreferencesForm> {
                       )
                     ],
                 ),
-                BottomSaveButton(text: "Save",onSave: onSave,)
-                // new Expanded
-                //   child: Container(
-                //     alignment: Alignment.bottomCenter,
-                //     child:
-                //     new RaisedButton(
-                //       child: new Text('Save', style: TextStyle(color: Colors.white),),
-                //       color: Colors.blueAccent,
-                //       onPressed: (){
-                //           _storePreferences();
-                //           Navigator.pop(context,true);
-                //       },
-                //     ) ,
-                //   ),
-                // )
+                Expanded(
+                  child:BottomSaveButton(text: "Save",onSave: onSave,)
+                )
               ],
             )
         )

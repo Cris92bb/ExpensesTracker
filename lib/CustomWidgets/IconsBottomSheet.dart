@@ -11,7 +11,7 @@ class IconsBottomSheet extends StatefulWidget{
   String   icon;
   IconsBottomSheet({this.onPressed, this.icon});
 
-  _IconsBottomSheet createState() => new _IconsBottomSheet();
+  _IconsBottomSheet createState() =>  _IconsBottomSheet();
 
 
 }
@@ -22,15 +22,15 @@ class _IconsBottomSheet extends State<IconsBottomSheet>{
 
  var icons = getIcons();
  Widget build(context){
-     return new Expanded( 
-            child:new GridView.builder(
+     return Expanded( 
+            child: GridView.builder(
               gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
               itemBuilder: (_,index){
                   var value =  icons.values.elementAt(index);
                   var key   =  icons.keys.elementAt(index);
-                  return new IconButton(
+                  return IconButton(
                     color: widget.icon == key ? Colors.lightGreen : Theme.of(context).primaryColorLight,
-                    icon: new Icon(value),
+                    icon: Icon(value),
                     onPressed:(){
                       widget.onPressed(key);
                       setState(() {

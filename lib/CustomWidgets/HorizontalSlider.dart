@@ -15,28 +15,27 @@ class HorizontalSlider extends StatefulWidget{
 
    HorizontalSlider(givenTotal,givenCurrency, givenRemaining,givenPayDay){
      total      =     givenTotal.toStringAsFixed(2)+" "+givenCurrency;
-     currency   =               givenCurrency;
+     currency   =                                       givenCurrency;
      remaining  = givenRemaining.toStringAsFixed(2)+" "+givenCurrency;
      payDate    = givenPayDay;
   }
 
   @override
-  _HorizontalSlider createState() => new _HorizontalSlider();
+  _HorizontalSlider createState() =>  _HorizontalSlider();
 }
 
 
 
 class _HorizontalSlider extends State<HorizontalSlider> {
   
-  double minimalHeigth=36;
-  double maximisedHeigth=90;
+  double minimalHeigth    = 36;
+  double maximisedHeigth  = 90;
 
 
   bool maximised=false;
 
   maximiseHeigth(){
     setState(() {
-
           if(maximised){
             maximised = false;
           }else{
@@ -46,32 +45,22 @@ class _HorizontalSlider extends State<HorizontalSlider> {
   }
 
   Widget build(context){
+
     var width = MediaQuery.of(context).size.width-50;
 
-
-
-
-    return new GestureDetector(
+    return GestureDetector(
       onVerticalDragUpdate: (event){
         if(!maximised && event.delta.dy > 10)
           maximiseHeigth();
         else if(maximised && event.delta.dy < -5)
           maximiseHeigth();
       },
-      child:new Container(
+      child: Container(
       height: maximised ? maximisedHeigth : minimalHeigth,
       padding: EdgeInsets.all(5),
       color: Colors.transparent,
-      // decoration: BoxDecoration(
-      //   boxShadow: [new BoxShadow(color: Theme.of(context).primaryColorLight, blurRadius: 6, offset:  const Offset(0, 5))],
-      //   border: new Border.all(
-      //     color: Theme.of(context).primaryColorDark
-      //   ),
-      //   borderRadius:BorderRadius.vertical(bottom:Radius.circular(15)),
-      //   color: Theme.of(context).primaryColorDark,
-      // ),
       child:
-      new Column(
+      Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
 
@@ -80,53 +69,41 @@ class _HorizontalSlider extends State<HorizontalSlider> {
               alignment: Alignment.topCenter,
               child:
                 Center(
-                  child: new Text(calculateDaysLeft(widget.payDate).toString()+" days remaining")
+                  child:  Text(calculateDaysLeft(widget.payDate).toString()+" days remaining")
                 ),
             ):
             Container(), //empty
             
             
             
-            new Container(
+            Container(
             alignment: Alignment.bottomCenter,
             margin: EdgeInsets.only(left: 20,right: 20),
-            child:new Row(
+            child: Row(
             children: <Widget>[
-              new Container(
+              Container(
                 child: 
-                new Row( 
+                 Row( 
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    new Text(
+                     Text(
                       'Total: ', 
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColorLight
-                      ),
                     ),
-                    new Text(
+                     Text(
                       widget.total, 
-                      style:  TextStyle(
-                        color: Theme.of(context).primaryColorLight
-                      ),
                     ),
                     ],
                   ),
                 width: width * 0.50,
                 ),
-                new Container(
-                  child:  new Row (
+                Container(
+                  child:   Row (
                     mainAxisAlignment: MainAxisAlignment.end,
                     children:[
-                      new Text('Left: ', 
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColorLight
-                        ),
+                      Text('Left: ', 
                       ),
-                      new Text(
+                      Text(
                         widget.remaining, 
-                        style:  TextStyle(
-                          color: Theme.of(context).primaryColorLight
-                        ),
                       ),
                     ]
                   ),
@@ -143,15 +120,16 @@ class _HorizontalSlider extends State<HorizontalSlider> {
 }
 
 calculateDaysLeft(int date){
+  if(date==null)date=30;
   var now = DateTime.now();
-  var payDate = new DateTime(now.year,now.month, date);
+  var payDate = DateTime(now.year,now.month, date);
 
   if(payDate.isBefore(now)){
 
     if(now.month== 12){
-      now = new DateTime(now.year+1,1,date);
+      now =  DateTime(now.year+1,1,date);
     }else{
-      now = new DateTime(now.year,now.month+1,date);
+      now =  DateTime(now.year,now.month+1,date);
     }
 
     var span = dateDifferenceInDays(payDate,DateTime.now());
@@ -164,7 +142,7 @@ calculateDaysLeft(int date){
 
 dateDifferenceInDays(DateTime from,DateTime to){
   int daysFrom = from.day;
-  var daysTo  = new DateTime(to.year,to.month,0);
+  var daysTo   = DateTime(to.year,to.month,0);
   print(daysTo.day - to.day);
 
   return daysFrom + daysTo.day-to.day;

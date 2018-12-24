@@ -8,19 +8,18 @@ class TotalBottomBar extends StatefulWidget{
     totalSpent = total.toStringAsFixed(2)+" "+currency;
   }
 
-  _TotalBottomBar createState() => new _TotalBottomBar();
+  _TotalBottomBar createState() => _TotalBottomBar();
 }
 
 
 class _TotalBottomBar extends State<TotalBottomBar> {
   Widget build(context){
     var width = MediaQuery.of(context).size.width-20;
-    var heigth = MediaQuery.of(context).size.height-200;
-    return new Container(
+    return Container(
       
-      decoration: new BoxDecoration(
-        border: new Border( top:
-          new BorderSide(
+      decoration: BoxDecoration(
+        border: Border( top:
+           BorderSide(
              color: Colors.blueGrey
           )
         )
@@ -28,20 +27,19 @@ class _TotalBottomBar extends State<TotalBottomBar> {
       padding: EdgeInsets.all(10),
       width: width+10,
       child:
-        new Row(
+         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-          new Container(
+           Container(
             width: width*0.4,
             child:
-            new Row(
+             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                new Text(
+                 Text(
                   'Total spent', 
                   style:
                   TextStyle( 
-                    color: Theme.of(context).primaryColorLight, 
                     fontSize: 20,
                     fontWeight: FontWeight.bold
                   ),
@@ -49,17 +47,16 @@ class _TotalBottomBar extends State<TotalBottomBar> {
               ],
             ),
           ),
-          new Container(
+           Container(
             width: width*0.25,
             child:
-            new Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                new Text(
+                Text(
                   widget.totalSpent, 
                   style: 
                   TextStyle(
-                    color: Theme.of(context).primaryColorLight, 
                     fontSize: 25,
                     fontWeight: FontWeight.bold
                   ),

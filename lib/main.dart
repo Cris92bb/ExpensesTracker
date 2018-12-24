@@ -10,19 +10,30 @@ import 'package:expences_calculator/DataModels/SingleExpense.dart';
 import 'package:expences_calculator/Themes/DarkTheme.dart';
 import 'package:expences_calculator/Themes/LightTheme.dart';
 import 'package:flutter/services.dart';
-
-
-//import 'package:sqflite/sqflite.dart';
-import 'dart:math';
 import 'dart:async';
 
 var databasePath;
 
-//void main() => runApp(new MyApp());
+//void main() => runApp( MyApp());
 
 
 
 void main() async {
+  runApp( MyApp());
+}
+
+
+
+class MyApp extends StatefulWidget{
+  MyApp();
+  _MyApp createState() =>  _MyApp();
+}
+
+
+
+
+
+Future<ThemeData> getTheme() async{
   bool theme;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   theme = prefs.getBool("lightTheme") ?? false;
@@ -34,9 +45,8 @@ void main() async {
         systemNavigationBarColor          : Colors.lightGreen,
         systemNavigationBarIconBrightness : Brightness.dark,
         statusBarColor                    : Colors.transparent,
-        statusBarBrightness               : Brightness.dark,
-        statusBarIconBrightness           : Brightness.dark,
     ));
+    return DarkTheme.theme;
   }else{
     //light theme startup
     SystemChrome.setSystemUIOverlayStyle(
@@ -44,39 +54,31 @@ void main() async {
         systemNavigationBarColor          : Colors.lightGreen,
         systemNavigationBarIconBrightness : Brightness.light,
         statusBarColor                    : Colors.transparent,
-        statusBarBrightness               : Brightness.light,
-        statusBarIconBrightness           : Brightness.light,
     ));
+    return LightTheme.theme;
   }
-  runApp(new MyApp(darkTheme: theme,));
-}
-
-
-
-class MyApp extends StatefulWidget{
-  var darkTheme = false;
-  MyApp({this.darkTheme});
-
-
-  _MyApp createState() => new _MyApp(darkTheme: darkTheme);
-
-
 }
 
 class _MyApp extends State<MyApp> {
 _MyApp({this.darkTheme});
   // This widget is the root of your application.
   bool darkTheme=false; 
+  var theme = LightTheme.theme;
+  @override
+  void initState() {
+    getTheme().then((th)=> theme = th);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return  MaterialApp(
       title: 'Expenses Tracker',
-      theme: darkTheme?? false ? DarkTheme.theme: LightTheme.theme  ,
-      home: new MyHomePage(title: 'Expenses Tracker',
+      theme: theme,
+      home:  MyHomePage(title: 'Expenses Tracker',
       onThemeChanged: (bool value){
         setState(() {
-                  darkTheme = value;
+          getTheme().then((th)=> theme = th);
         });
       },),
     );
@@ -88,24 +90,15 @@ class MyHomePage extends StatefulWidget {
 
   var onThemeChanged;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() =>  _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
 
-    ExpensesProvider provider = new ExpensesProvider();
+    ExpensesProvider provider =  ExpensesProvider();
     @override
     void initState() {
         super.initState();
@@ -116,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     }
 
-    Future<void> insertNewExpense(SingleExpense exp) async {
+    Future<void> insertExpense(SingleExpense exp) async {
       await provider.insert(exp);
       loadExpenses();
     }
@@ -172,38 +165,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return new Scaffold(
+    return Scaffold(
             
             // drawer: Drawer(
 
             // ),
-            appBar: new AppBar(
-              // Here we take the value from the MyHomePage object that was created by
-              // the App.build method, and use it to set our appbar title.
+            appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0.0,
-              title: new Center(
+              title:  Center(
                 child:
-                new Text(
+                 Text(
                   widget.title, 
                   style:
                   TextStyle(
-                    color: Theme.of(context).primaryColorLight, 
+                    color: Theme.of(context).primaryColorLight,
                     fontFamily: 'Mogra',
                     fontSize: 30
                   ),
                 ),
               ),
               actions: <Widget>[
-                new IconButton(
-                  color: Theme.of(context).primaryColorLight,
+                 IconButton(
                   icon: Icon(Icons.settings),
+                  color: Theme.of(context).primaryColorLight,
                   tooltip: 'Settings',
                   onPressed: (){
                       Navigator.push(
@@ -214,28 +199,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            body: new Center(
+            body: Center(
               // Center is a layout widget. It takes a single child and positions it
               // in the middle of the parent.
-              child: new Column (
+              child: Column (
                 children: <Widget>[
-                  new HorizontalSlider(total,currency,remaining,payday),
-                  new ExpensesList(expenses,currency),
-                  new TotalBottomBar(totalSpent,currency)
+                   HorizontalSlider(total,currency,remaining,payday),
+                   ExpensesList(expenses,currency),
+                   TotalBottomBar(totalSpent,currency)
                 ],
               )
             ),
-            floatingActionButton: new FloatingActionButton(
+            floatingActionButton:  FloatingActionButton(
               tooltip: 'Increment',
-              child: new Icon(Icons.add),
+              child: Icon(Icons.add),
               foregroundColor: Colors.white,
               backgroundColor: Colors.lightGreen,
               onPressed: (){
-                  Navigator.push(context,MaterialPageRoute(builder: (context) => new CreateExpense())).then((val){
+                  Navigator.push(context,MaterialPageRoute(builder: (context) =>  CreateExpense())).then((val){
                       setState(() {
                         if(val!=null)
-                          expenses.add(val);
-                          expenses.sort((x,y)=> x.date.compareTo(y.date));
+                          loadExpenses();
                       });
                   });
               },

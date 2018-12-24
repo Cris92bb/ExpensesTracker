@@ -16,13 +16,13 @@ class BottomSaveButton extends StatelessWidget{
   Widget build(context){
     var width = MediaQuery.of(context).size.width;
     return 
-      new Expanded(
-      child:new Container(
+      Expanded(
+      child: Container(
         alignment: Alignment.bottomCenter,
         child:
-        new MaterialButton(
+         MaterialButton(
           minWidth: width,
-          child: new Text(text, style: TextStyle(color: Theme.of(context).primaryColorDark),),
+          child: Text(text),
           color: Colors.lightGreen,
           onPressed: onSave,
         ),

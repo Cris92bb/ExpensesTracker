@@ -10,15 +10,21 @@ import 'package:expences_calculator/DataModels/SingleExpense.dart';
 import 'package:expences_calculator/Themes/DarkTheme.dart';
 import 'package:expences_calculator/Themes/LightTheme.dart';
 import 'package:flutter/services.dart';
+
+
 import 'dart:async';
 
 var databasePath;
+
 
 //void main() => runApp( MyApp());
 
 
 
+
+
 void main() async {
+
   runApp( MyApp());
 }
 
@@ -34,6 +40,7 @@ class MyApp extends StatefulWidget{
 
 
 Future<ThemeData> getTheme() async{
+
   bool theme;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   theme = prefs.getBool("lightTheme") ?? false;
@@ -45,8 +52,10 @@ Future<ThemeData> getTheme() async{
         systemNavigationBarColor          : Colors.lightGreen,
         systemNavigationBarIconBrightness : Brightness.dark,
         statusBarColor                    : Colors.transparent,
+
     ));
     return DarkTheme.theme;
+
   }else{
     //light theme startup
     SystemChrome.setSystemUIOverlayStyle(
@@ -54,9 +63,11 @@ Future<ThemeData> getTheme() async{
         systemNavigationBarColor          : Colors.lightGreen,
         systemNavigationBarIconBrightness : Brightness.light,
         statusBarColor                    : Colors.transparent,
+
     ));
     return LightTheme.theme;
   }
+
 }
 
 class _MyApp extends State<MyApp> {
@@ -79,6 +90,7 @@ _MyApp({this.darkTheme});
       onThemeChanged: (bool value){
         setState(() {
           getTheme().then((th)=> theme = th);
+
         });
       },),
     );
@@ -90,15 +102,19 @@ class MyHomePage extends StatefulWidget {
 
   var onThemeChanged;
 
+
   final String title;
 
   @override
   _MyHomePageState createState() =>  _MyHomePageState();
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
     ExpensesProvider provider =  ExpensesProvider();
+
     @override
     void initState() {
         super.initState();
@@ -109,7 +125,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     }
 
+
     Future<void> insertExpense(SingleExpense exp) async {
+
       await provider.insert(exp);
       loadExpenses();
     }
@@ -166,9 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     
     return Scaffold(
-            
             // drawer: Drawer(
-
             // ),
             appBar: AppBar(
               backgroundColor: Colors.transparent,
@@ -186,9 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               actions: <Widget>[
-                 IconButton(
-                  icon: Icon(Icons.settings),
+                new IconButton(
                   color: Theme.of(context).primaryColorLight,
+                  icon: Icon(Icons.settings),
                   tooltip: 'Settings',
                   onPressed: (){
                       Navigator.push(
@@ -228,4 +244,5 @@ class _MyHomePageState extends State<MyHomePage> {
           );
           
     }
-  }
+}
+

@@ -24,7 +24,6 @@ class BottomSaveButton extends StatelessWidget{
           color: Colors.lightGreen,
           onPressed: onSave,
         ),
-      
     );
   }
 }

@@ -15,7 +15,9 @@ class ExpensesList extends StatefulWidget{
   }
 
   @override
+
   _ExpensesList createState() =>  _ExpensesList();
+
 
 }
 
@@ -31,12 +33,12 @@ class _ExpensesList extends State<ExpensesList> {
   }
   var icons = getIcons();
 
+
   Widget build(context){
 
     return Expanded(
       child: ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        reverse: false,
         itemBuilder: (_,int index) {
           if(widget.expenses==null) 
             return null;
@@ -50,6 +52,7 @@ class _ExpensesList extends State<ExpensesList> {
 }
 
 class EachList extends StatelessWidget{
+
   final SingleExpense   expence;
   final String         currency;
   final IconData           icon;
@@ -73,6 +76,7 @@ class EachList extends StatelessWidget{
           Navigator.push(context, MaterialPageRoute(builder: (context)=> ExpenseDetails(expence,currency)));
         },
         title: 
+
          Row(
           children: <Widget>[
              Icon(icon, color: Colors.lightGreen,),
@@ -81,6 +85,7 @@ class EachList extends StatelessWidget{
             ),
             ],
         ),
+
         trailing: Text(
           expence.ammount.toStringAsFixed(2)+" "+currency,
           style: TextStyle(

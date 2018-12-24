@@ -59,8 +59,8 @@ class _PreferencesForm extends State<PreferencesForm> {
   @override
   Widget build(BuildContext context) {
   var width = MediaQuery.of(context).size.width-30;
-  var heigth = MediaQuery.of(context).size.height-30;
 
+  var heigth = MediaQuery.of(context).size.height-30;
     return Scaffold(
       appBar: AppBar(
         //leading: new Icon(Icons.arrow_downward),
@@ -71,6 +71,7 @@ class _PreferencesForm extends State<PreferencesForm> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
+
       body: Container(
         padding: EdgeInsets.all(10),
         child:
@@ -145,6 +146,7 @@ class _PreferencesForm extends State<PreferencesForm> {
                       )
                     ],
                 ),
+
                 Expanded(
                   child:BottomSaveButton(text: "Save",onSave: onSave,)
                 )

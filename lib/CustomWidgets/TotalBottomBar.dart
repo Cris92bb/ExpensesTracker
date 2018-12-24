@@ -8,6 +8,7 @@ class TotalBottomBar extends StatefulWidget{
     totalSpent = total.toStringAsFixed(2)+" "+currency;
   }
 
+
   _TotalBottomBar createState() => _TotalBottomBar();
 }
 
@@ -15,6 +16,7 @@ class TotalBottomBar extends StatefulWidget{
 class _TotalBottomBar extends State<TotalBottomBar> {
   Widget build(context){
     var width = MediaQuery.of(context).size.width-20;
+
     return Container(
       
       decoration: BoxDecoration(
@@ -27,6 +29,7 @@ class _TotalBottomBar extends State<TotalBottomBar> {
       padding: EdgeInsets.all(10),
       width: width+10,
       child:
+
          Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -47,6 +50,7 @@ class _TotalBottomBar extends State<TotalBottomBar> {
               ],
             ),
           ),
+
            Container(
             width: width*0.25,
             child:

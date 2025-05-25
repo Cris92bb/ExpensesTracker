@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -7,10 +6,10 @@ import 'package:flutter/material.dart';
 
 class BottomSaveButton extends StatelessWidget{
   
-  final dynamic onSave;
+  final VoidCallback onSave;
   final String text;
 
-  BottomSaveButton({this.text,this.onSave});
+  BottomSaveButton({required this.text, required this.onSave});
 
 
   Widget build(context){

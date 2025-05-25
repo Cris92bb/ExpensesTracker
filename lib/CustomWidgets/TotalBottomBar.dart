@@ -1,45 +1,40 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class TotalBottomBar extends StatefulWidget{
-  var totalSpent;
+class TotalBottomBar extends StatelessWidget { // Changed to StatelessWidget
+  final String totalSpentFormatted; // Store the formatted string
 
-  TotalBottomBar(var total,var currency){
-    totalSpent = total.toStringAsFixed(2)+" "+currency;
-  }
+  // Constructor with named parameters and initialization
+  TotalBottomBar({ // Removed const
+    Key? key, 
+    required double total, // Take raw double
+    required String currency
+  }) : totalSpentFormatted = "${total.toStringAsFixed(2)} $currency", // Format here
+       super(key: key);
 
-
-  _TotalBottomBar createState() => _TotalBottomBar();
-}
-
-
-class _TotalBottomBar extends State<TotalBottomBar> {
-  Widget build(context){
+  @override
+  Widget build(BuildContext context){ // No longer a State widget
     var width = MediaQuery.of(context).size.width-20;
 
     return Container(
-      
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration( // Added const
         border: Border( top:
            BorderSide(
              color: Colors.blueGrey
           )
         )
       ),
-      padding: EdgeInsets.all(10),
-      width: width+10,
-      child:
-
-         Row(
+      padding: const EdgeInsets.all(10), // Added const
+      width: width+10, // This might need to be width if padding is included, or use full width
+      child: Row( // Removed 'new'
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
            Container(
             width: width*0.4,
             child:
-             Row(
+             Row( // Removed 'new'
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                 Text(
+                 const Text( // Added const
                   'Total spent', 
                   style:
                   TextStyle( 
@@ -50,17 +45,16 @@ class _TotalBottomBar extends State<TotalBottomBar> {
               ],
             ),
           ),
-
            Container(
             width: width*0.25,
             child:
-            Row(
+            Row( // Removed 'new'
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  widget.totalSpent, 
+                  totalSpentFormatted, // Use the formatted field
                   style: 
-                  TextStyle(
+                  const TextStyle( // Added const
                     fontSize: 25,
                     fontWeight: FontWeight.bold
                   ),

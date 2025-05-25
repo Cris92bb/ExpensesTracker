@@ -31,7 +31,7 @@ void main() async {
 
 
 class MyApp extends StatefulWidget{
-  MyApp();
+  MyApp({super.key}); // Use super.key
   _MyApp createState() =>  _MyApp();
 }
 
@@ -71,14 +71,20 @@ Future<ThemeData> getTheme() async{
 }
 
 class _MyApp extends State<MyApp> {
-_MyApp({this.darkTheme});
+// _MyApp(); // No need for constructor here
   // This widget is the root of your application.
-  bool darkTheme=false; 
-  var theme = LightTheme.theme;
+  // bool darkTheme=false; // Not used here
+  ThemeData theme = LightTheme.theme; // Initialize with a default
   @override
   void initState() {
-    getTheme().then((th)=> theme = th);
-    super.initState();
+    super.initState(); // super.initState() first
+    getTheme().then((th) {
+      if (mounted) {
+        setState(() {
+          theme = th;
+        });
+      }
+    });
   }
 
   @override
@@ -86,23 +92,34 @@ _MyApp({this.darkTheme});
     return  MaterialApp(
       title: 'Expenses Tracker',
       theme: theme,
-      home:  MyHomePage(title: 'Expenses Tracker',
-      onThemeChanged: (bool value){
-        setState(() {
-          getTheme().then((th)=> theme = th);
-
-        });
-      },),
+      home:  MyHomePage(
+        title: 'Expenses Tracker',
+        onThemeChanged: (bool value){ // value is the new theme state (true for dark)
+          if (mounted) {
+            setState(() {
+              // Update the theme based on 'value' directly or by re-calling getTheme if it uses this value
+              // For simplicity, let's assume getTheme() will now correctly reflect the new preference
+              // after it's been saved by PreferencesForm.
+              // The `value` parameter here might be redundant if getTheme() always reads from prefs.
+              getTheme().then((th) {
+                if (mounted) {
+                  setState(() {
+                    theme = th;
+                  });
+                }
+              });
+            });
+          }
+        },
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title,this.onThemeChanged}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, required this.onThemeChanged}) : super(key: key); // Use Key? and required
 
-  var onThemeChanged;
-
-
+  final Function(bool) onThemeChanged; // Specific function type
   final String title;
 
   @override
@@ -133,52 +150,48 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     //need all expenses here so i can pass totals to other widgets
-    List<SingleExpense> expenses;
+    List<SingleExpense> expenses = []; // Initialize
     loadExpenses() async{
           provider.getAllExpenses().then((allExps){
-            var sum =  0.0;
-            if(allExps != null && allExps.length>0){
+            double sum =  0.0;
+            if(allExps.isNotEmpty){ // Use isNotEmpty
               allExps.forEach((val){
-                sum+=val.ammount;
+                sum += val.ammount ?? 0.0; // Handle nullable ammount
               });
             }
-
-            setState(() {
-              expenses    =     allExps;  
-              remaining   = total - sum;     
-              totalSpent  =         sum;       
-            });
+            if(mounted) {
+              setState(() {
+                expenses    =     allExps;  
+                remaining   = (total ?? 0.0) - sum; // Handle nullable total   
+                totalSpent  =         sum;       
+              });
+            }
           });
     }
 
 
     getPrefs() async {
       SharedPreferences.getInstance().then((pref){
-       setState(() {
-                var darkTheme  = pref.getBool("lightTheme");
-                widget.onThemeChanged(darkTheme); 
-                currency  = pref.getString('currency');
-                payday    = pref.getInt("payDay");
-                if(currency==null) currency ="‎£";
-                total     =  pref.getDouble('maxAmmount');
-                if(total==null)total =0;
+       if(mounted) {
+        setState(() {
+                  bool? darkTheme  = pref.getBool("lightTheme");
+                  widget.onThemeChanged(darkTheme ?? false); // Provide default if null
+                  currency  = pref.getString('currency') ?? ""; // Provide default
+                  payday    = pref.getInt("payDay") ?? 30; // Provide default
+                  total     = pref.getDouble('maxAmmount') ?? 0.0; // Provide default
 
-
-                if(total!= null && totalSpent!=null){
-                  remaining =       total - totalSpent;
-                } else{
-                  remaining =  total;
-                }
-                print(total);
-              });
+                  remaining = (total ?? 0.0) - totalSpent; // Handle nullable total
+                                print(total);
+                });
+        }
       });
     }
 
-    var currency  =     "";
-    int payday    =     30;
-    double total  =      1;
-    var remaining =    0.0;
-    var totalSpent=    0.0;
+    String currency  = ""; // Initialize
+    int payday    = 30; // Initialize
+    double? total  = 1.0; // Make nullable or initialize with a default
+    double remaining = 0.0; // Initialize
+    double totalSpent= 0.0; // Initialize
 
   @override
   Widget build(BuildContext context) {
@@ -202,15 +215,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               actions: <Widget>[
-                new IconButton(
+                IconButton( // Removed 'new'
                   color: Theme.of(context).primaryColorLight,
-                  icon: Icon(Icons.settings),
+                  icon: const Icon(Icons.settings), // Added const
                   tooltip: 'Settings',
                   onPressed: (){
                       Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => PreferencesForm())
-                      ).then((val)=>val!=null && val? getPrefs():null);
+                      ).then((val)=>val!=null && val == true ? getPrefs():null); // Ensure val is true
                   },
                 ),
               ],
@@ -220,23 +233,24 @@ class _MyHomePageState extends State<MyHomePage> {
               // in the middle of the parent.
               child: Column (
                 children: <Widget>[
-                   HorizontalSlider(total,currency,remaining,payday),
-                   ExpensesList(expenses,currency),
-                   TotalBottomBar(totalSpent,currency)
+                   HorizontalSlider(givenTotal: total ?? 0.0, currency: currency, givenRemaining: remaining, payDate: payday), // Corrected givenPayDay to payDate
+                   ExpensesList(expenses: expenses, currency: currency), 
+                   TotalBottomBar(total: totalSpent, currency: currency)
                 ],
               )
             ),
             floatingActionButton:  FloatingActionButton(
               tooltip: 'Increment',
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add), // Added const
               foregroundColor: Colors.white,
               backgroundColor: Colors.lightGreen,
               onPressed: (){
                   Navigator.push(context,MaterialPageRoute(builder: (context) =>  CreateExpense())).then((val){
-                      setState(() {
-                        if(val!=null)
-                          loadExpenses();
-                      });
+                      if (mounted && val != null) { // Check mounted
+                        setState(() {
+                            loadExpenses();
+                        });
+                      }
                   });
               },
             ), 

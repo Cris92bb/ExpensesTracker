@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:expences_calculator/DataModels/SingleExpense.dart';
 import 'package:expences_calculator/CustomWidgets/BottomSaveButton.dart';
 import 'package:expences_calculator/CustomWidgets/IconsBottomSheet.dart';
@@ -10,10 +9,10 @@ import '../Helpers/DatabaseHelper.dart';
 
 class CreateExpense extends StatefulWidget{
 
-  SingleExpense expense;
-  CreateExpense({this.expense});
+  final SingleExpense? expense; // Made nullable
+  CreateExpense({this.expense, Key? key}) : super(key: key); // Added Key
   @override
-  _CreateExpense createState() => new _CreateExpense();
+  _CreateExpense createState() => _CreateExpense(); // Removed 'new'
 
 }
 
@@ -21,53 +20,98 @@ class CreateExpense extends StatefulWidget{
 class _CreateExpense extends State<CreateExpense>{
   
 
-  final dateFormat = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
-  ExpensesProvider provider = new ExpensesProvider();
-  DateTime date;
-  TextEditingController ammountController;
-  TextEditingController noteController;
-  int ammount;
-  String note;
-  String icon;
+  final dateFormat = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"); // Existing
+  // ExpensesProvider provider = new ExpensesProvider(); // Initialize if needed, or make it accessible differently
+  // For now, let's assume it's okay to create a new one or handle it via DI/service locator later.
+  final ExpensesProvider provider = ExpensesProvider(); // Initialize
+
+  DateTime? date; // Made nullable
+  late TextEditingController ammountController; // Made late
+  late TextEditingController noteController; // Made late
+  // int? ammount; // Not directly used as state field, derived from controller
+  // String? note; // Not directly used as state field, derived from controller
+  String? icon; // Made nullable
 
   
   @override 
   void initState() {
-      if(widget.expense != null){
-        var temp = widget.expense;
-        ammountController = new TextEditingController(text: temp.ammount.toString());
-        noteController    = new TextEditingController(text: temp.note.toString());
-        icon = temp.icon;
-        date = temp.date;
-      }else{
-        ammountController = new TextEditingController();
-        noteController    = new TextEditingController();
+      super.initState(); // super.initState() first
+      
+      ammountController = TextEditingController();
+      noteController    = TextEditingController();
+
+      final SingleExpense? initialExpense = widget.expense;
+      if (initialExpense != null) {
+        // Populate fields from widget.expense if it's not null
+        ammountController.text = initialExpense.ammount?.toString() ?? '';
+        noteController.text    = initialExpense.note ?? '';
+        icon = initialExpense.icon;
+        date = initialExpense.date ?? DateTime.now(); // Default to now if date is null
+      } else {
+        // Default values for a new expense
+        date = DateTime.now();
+        icon = null; // Or a default icon if you have one
       }
-      // TODO: implement initState
-      super.initState();
   }
 
   @override
   void dispose() {
       ammountController.dispose();
-      // TODO: implement dispose
+      noteController.dispose(); // Dispose noteController too
       super.dispose();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: date ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != date) {
+      setState(() {
+        date = picked;
+      });
+    }
+  }
 
   onSave(){
-    var tempExpense;
-    bool newExpense = widget.expense==null;
-    if(newExpense){
-      tempExpense = new SingleExpense();
-    }else{
-      tempExpense = widget.expense;
+    final double? ammountValue = double.tryParse(ammountController.text);
+    final String noteValue = noteController.text;
+
+    if (ammountValue == null) {
+      // Handle error: ammount is not a valid double
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount'))
+      );
+      return;
+    }
+    if (date == null) {
+      // Handle error: date is not selected
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a date'))
+      );
+      return;
     }
 
-    tempExpense.ammount = double.parse(ammountController.text);
-    tempExpense.date    = date == null ? DateTime.now() : date;
-    tempExpense.icon    = icon;
-    tempExpense.note    = noteController.text;
+    SingleExpense tempExpense;
+    bool newExpense = widget.expense == null;
+
+    if(newExpense){
+      tempExpense = SingleExpense(
+        ammount: ammountValue,
+        date: date,
+        icon: icon,
+        note: noteValue
+      );
+    }else{
+      // Update existing expense
+      tempExpense = widget.expense!; // We know it's not null here
+      tempExpense.ammount = ammountValue;
+      tempExpense.date    = date;
+      tempExpense.icon    = icon;
+      tempExpense.note    = noteValue;
+    }
 
     if(newExpense){
       provider.insert(tempExpense);
@@ -86,9 +130,9 @@ class _CreateExpense extends State<CreateExpense>{
 
   @override
   Widget build(BuildContext context){
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("New Expense", style: new TextStyle(color: Theme.of(context).primaryColorLight),),
+    return Scaffold( // Removed 'new'
+      appBar: AppBar( // Removed 'new'
+        title: Text("New Expense", style: TextStyle(color: Theme.of(context).primaryColorLight),), // Removed 'new'
         iconTheme: IconThemeData(
             color: Theme.of(context).primaryColorLight, //change your color here
         ),
@@ -96,26 +140,31 @@ class _CreateExpense extends State<CreateExpense>{
         elevation: 0.0,
       ),
       body: 
-      new Container(
-        padding: EdgeInsets.all(10),
-        child:  new Column(
+      Container( // Removed 'new'
+        padding: const EdgeInsets.all(10), // Added const
+        child:  Column( // Removed 'new'
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            DateTimePickerFormField(
-                format: dateFormat,
-                decoration: InputDecoration(labelText: 'Date'),
-                onChanged: (dt) => setState(() => date = dt),
-                initialValue: widget.expense != null ? widget.expense.date : DateTime.now(),
-              ),
+            Row( // New Row for Date display and Button
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(date != null ? dateFormat.format(date!) : 'No date selected', style: const TextStyle(fontSize: 16)), // Added const
+                ElevatedButton(
+                  child: const Text('Select Date'), // Added const
+                  onPressed: () => _selectDate(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20), // Added SizedBox for spacing
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration( // Added const
                 labelText: 'Ammount',
               ),
               keyboardType:TextInputType.number,
               controller: ammountController,
             ),
-            new Container(
-              margin:EdgeInsets.only(top: 10),
+            Container( // Removed 'new'
+              margin: const EdgeInsets.only(top: 10), // Added const
               child:
               TextFormField(
                 keyboardType: TextInputType.multiline,
@@ -130,9 +179,9 @@ class _CreateExpense extends State<CreateExpense>{
                 controller: noteController,
               ),
             ),
-            new IconsBottomSheet(onPressed: onIconSelect, icon: icon),
+            Expanded(child: IconsBottomSheet(onPressed: onIconSelect, icon: icon)), // Wrapped in Expanded
             //Bottom Save Button
-            new BottomSaveButton(text: "Save Expense", onSave: onSave)
+            BottomSaveButton(text: "Save Expense", onSave: onSave) // Removed 'new'
           ],
         ),
       )

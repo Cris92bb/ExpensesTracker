@@ -1,25 +1,24 @@
 
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
 
 class HorizontalSlider extends StatefulWidget{
 
-   String        total;
-   String     currency;
-   String    remaining;
-   int         payDate;
+   final String total;
+   final String currency;
+   final String remaining;
+   final int payDate;
    
 
-   HorizontalSlider(givenTotal,givenCurrency, givenRemaining,givenPayDay){
-     total      =     givenTotal.toStringAsFixed(2)+" "+givenCurrency;
-
-     currency   =                                       givenCurrency;
-     remaining  = givenRemaining.toStringAsFixed(2)+" "+givenCurrency;
-     payDate    = givenPayDay;
-  }
+   HorizontalSlider({
+     required double givenTotal,
+     required this.currency, 
+     required double givenRemaining,
+     required this.payDate
+   }) : total = "${givenTotal.toStringAsFixed(2)} $currency",
+        remaining = "${givenRemaining.toStringAsFixed(2)} $currency";
 
   @override
 
@@ -129,7 +128,6 @@ class _HorizontalSlider extends State<HorizontalSlider> {
 
 calculateDaysLeft(int date){
 
-  if(date==null)date=30;
   var now = DateTime.now();
   var payDate = DateTime(now.year,now.month, date);
 

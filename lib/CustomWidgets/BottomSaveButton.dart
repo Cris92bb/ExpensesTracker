@@ -1,35 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
-
-
-
-class BottomSaveButton extends StatelessWidget{
-  
-  final dynamic onSave;
+class BottomSaveButton extends StatelessWidget {
+  final VoidCallback onSave;
   final String text;
 
-  BottomSaveButton({this.text,this.onSave});
+  BottomSaveButton({required this.text, required this.onSave});
 
-
-  Widget build(context){
+  Widget build(context) {
     var width = MediaQuery.of(context).size.width;
-    return 
-      Expanded(
-      child: Container(
-        alignment: Alignment.bottomCenter,
-        child:
-         MaterialButton(
-          minWidth: width,
-          child: Text(text),
-          color: Colors.lightGreen,
-          onPressed: onSave,
-        ),
-      )
+    return Container(
+      alignment: Alignment.bottomCenter,
+      child: MaterialButton(
+        minWidth: width,
+        child: Text(text),
+        color: Colors.lightGreen,
+        onPressed: onSave,
+      ),
     );
   }
 }
-
-
-

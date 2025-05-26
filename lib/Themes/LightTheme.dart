@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LightTheme{
+class LightTheme {
   static var theme = ThemeData(
-
     primarySwatch: Colors.lightGreen,
     primaryColorLight: Colors.black,
     fontFamily: 'Farsan',
